@@ -1,5 +1,5 @@
-#ifndef __DECISION_TREE_CPP_
-#define __DECISION_TREE_CPP_
+#ifndef __DECISION_TREE_H_
+#define __DECISION_TREE_H_
 
 class DecisionTree
 {
