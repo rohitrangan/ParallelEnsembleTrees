@@ -12,7 +12,7 @@ private:
     bool subset_features;
     Node *root;
 
-    int getBestFeature(Node *node);
+    int get_best_feature(Node *node, Data training);
 
 public:
     DecisionTree();
@@ -23,4 +23,3 @@ public:
 };
 
 #endif /* __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_ */
-
