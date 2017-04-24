@@ -1,6 +1,7 @@
 #ifndef __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_
 #define __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_
 
+#include <set>
 #include <cmath>
 #include <cfloat>
 #include <vector>
@@ -19,6 +20,11 @@ private:
     Node *root;
 
     int get_best_feature(Node *node, Data training);
+    int get_majority_label(Node* node, Data training);
+    int is_pure(Node* node, Data training);
+    Node* create_tree(Data training, int depth, std::set<int> data_ind,
+                      std::set<int> feature_ind);
+    int predict_one(Node* node, std::vector<int> feature);
 
 public:
     DecisionTree();
@@ -29,3 +35,4 @@ public:
 };
 
 #endif /* __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_ */
+
