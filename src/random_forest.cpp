@@ -14,7 +14,7 @@ RandomForest::RandomForest(int num_trees, int max_depth, int min_examples,
     this->subset_features = subset_features;
 }
 
-void Data::train(Data training)
+void RandomForest::train(Data training)
 {
     for(int i = 0; i < this->num_trees; ++i)
     {
@@ -25,7 +25,7 @@ void Data::train(Data training)
     }
 }
 
-std::vector<int> Data::predict(Data testing)
+std::vector<int> RandomForest::predict(Data testing)
 {
     int dataset_size = testing.get_dataset_size();
     std::vector<int> results(dataset_size, 0);

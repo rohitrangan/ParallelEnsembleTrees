@@ -1,7 +1,7 @@
 #ifndef __PARALLEL_ENSEMBLE_TREE_NODE_H_
 #define __PARALLEL_ENSEMBLE_TREE_NODE_H_
 
-#include <vector>;
+#include <vector>
 
 class Node
 {

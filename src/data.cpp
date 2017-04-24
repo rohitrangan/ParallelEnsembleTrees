@@ -2,18 +2,19 @@
 
 Data::Data(std::vector< std::vector<int> > features, std::vector<int> labels)
 {
-    this->features(features);
-    this->labels(labels);
+    this->features = features;
+    this->labels = labels;
     this->dataset_size = labels.size();
-    this->weights(this->dataset_size, (1.0 / this->dataset_size));
+    this->weights =
+        std::vector<double>(this->dataset_size, (1.0 / this->dataset_size));
 }
 
 Data::Data(std::vector< std::vector<int> > features, std::vector<int> labels,
            std::vector<double> weights)
 {
-    this->features(features);
-    this->labels(labels);
-    this->weights(weights);
+    this->features = features;
+    this->labels = labels;
+    this->weights = weights;
     this->dataset_size = labels.size();
 }
 
