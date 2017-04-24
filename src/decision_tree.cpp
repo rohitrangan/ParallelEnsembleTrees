@@ -1,7 +1,4 @@
 #include "../include/decision_tree.h"
-#include <vector>
-#include <limits.h>
-#include <math.h>
 // class DecisionTree
 // {
 // private:
@@ -39,10 +36,10 @@ int DecisionTree::get_best_feature(Node *node, Data training){
     float g_min = FLT_MAX;
     int fmin_id = INT_MIN;
 
-    for(int i: node.current_feature_indices){
+    for(int i: node->current_feature_indices){
         int c_freq[2][2] = {{0}};
         
-        for(int j: node.node_data_indices){
+        for(int j: node->node_data_indices){
             //c_freq's first/second row means feature absence/presence in the current vector (features[j])
             //c_freq's first/second column means feature belongs to 0th class/1st class
             c_freq[features[j][i]][labels[j]] += 1;
@@ -62,16 +59,17 @@ int DecisionTree::get_best_feature(Node *node, Data training){
         float g_left = (n_left/(n_left + n_right))*(1.0 - (pow(c_freq[0][0],2) + pow(c_freq[0][1],2)) );
         float g_right = (n_right/(n_left + n_right))*(1.0 - (pow(c_freq[1][0],2) + pow(c_freq[1][1],2)) );
 
-        float g_total = g_left + g_right
+        float g_total = g_left + g_right;
         if (g_total <= g_min){
-            g_min = g_total
-            fmin_id = f_id
+            g_min = g_total;
+            fmin_id = i;
         }
     }
 
     if(fmin_id == INT_MIN){
-        cout<<"This should not happen"<<endl;
+        std::cout<<"This should not happen"<<std::endl;
     }
     
     return fmin_id;
 }
+

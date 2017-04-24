@@ -1,6 +1,12 @@
 #ifndef __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_
 #define __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_
 
+#include <cmath>
+#include <cfloat>
+#include <vector>
+#include <climits>
+#include <iostream>
+
 #include "data.h"
 #include "node.h"
 

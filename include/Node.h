@@ -5,6 +5,7 @@
 
 class Node
 {
+public:
     int node_depth;
     std::vector<int> node_data_indices;
     std::vector<int> current_feature_indices;
