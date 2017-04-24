@@ -9,6 +9,7 @@ private:
     std::vector< std::vector<int> > features;
     std::vector<int> labels;
     std::vector<double> weights;
+    int dataset_size;
 
 public:
     Data();
@@ -16,9 +17,10 @@ public:
     Data(std::vector< std::vector<int> > features, std::vector<int> labels,
          std::vector<double> weights);
 
-    std::vector< std::vector<int> > getFeatures();
-    std::vector<int> getLabels();
-    std::vector<double> getWeights();
+    int get_dataset_size();
+    std::vector< std::vector<int> > get_features();
+    std::vector<int> get_labels();
+    std::vector<double> get_weights();
 };
 
 #endif /* __PARALLEL_ENSEMBLE_TREES_DATA_H_ */

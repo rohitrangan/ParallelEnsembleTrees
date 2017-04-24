@@ -1,6 +1,9 @@
 #ifndef __PARALLEL_ENSEMBLE_TREES_RANDOM_FOREST_H_
 #define __PARALLEL_ENSEMBLE_TREES_RANDOM_FOREST_H_
 
+#include <vector>
+#include <utility>
+
 #include "data.h"
 #include "node.h"
 #include "decision_tree.h"
@@ -13,8 +16,6 @@ private:
     int min_examples;
     bool subset_features;
     std::vector<DecisionTree> trees;
-
-    int getBestFeature(Node *node);
 
 public:
     RandomForest();
