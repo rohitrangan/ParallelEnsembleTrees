@@ -104,5 +104,7 @@ Temporary Items
 
 # Compiler generated outputs
 .depend
+.mpidepend
 ensemble_trees
+ensemble_trees_pl
 
