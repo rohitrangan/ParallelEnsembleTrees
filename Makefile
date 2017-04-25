@@ -11,7 +11,7 @@ TARGET=ensemble_trees
 
 MPICXX=mpic++
 MPICXXFLAGS= -Wall -Wextra -std=c++0x
-MPICXXSRCS=mpisrc/main_pl.cpp mpisrc/data.cpp mpisrc/node.cpp mpisrc/decision_tree.cpp mpisrc/random_forest_pl.cpp
+MPICXXSRCS=mpisrc/main_pl.cpp mpisrc/data.cpp mpisrc/node.cpp mpisrc/decision_tree.cpp
 MPICXXOBJS=$(MPICXXSRCS:.cpp=.o)
 MPILIBS=
 MPIINCLUDES=-I./include
