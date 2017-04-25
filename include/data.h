@@ -1,7 +1,10 @@
 #ifndef __PARALLEL_ENSEMBLE_TREES_DATA_H_
 #define __PARALLEL_ENSEMBLE_TREES_DATA_H_
 
-#include<vector>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
 
 class Data
 {
@@ -13,6 +16,7 @@ private:
 
 public:
     Data();
+    Data(char* feature_file, char* label_file);
     Data(std::vector< std::vector<int> > features, std::vector<int> labels);
     Data(std::vector< std::vector<int> > features, std::vector<int> labels,
          std::vector<double> weights);

@@ -4,6 +4,8 @@
 #include <set>
 #include <cmath>
 #include <cfloat>
+#include <chrono>
+#include <random>
 #include <vector>
 #include <climits>
 #include <iostream>
@@ -19,10 +21,10 @@ private:
     bool subset_features;
     Node *root;
 
-    int get_best_feature(Node *node, Data training);
-    int get_majority_label(Node* node, Data training);
-    int is_pure(Node* node, Data training);
-    Node* create_tree(Data training, int depth, std::set<int> data_ind,
+    int get_best_feature(Node *node, Data& training);
+    int get_majority_label(Node* node, Data& training);
+    int is_pure(Node* node, Data& training);
+    Node* create_tree(Data& training, int depth, std::set<int> data_ind,
                       std::set<int> feature_ind);
     int predict_one(Node* node, std::vector<int> feature);
 
@@ -30,8 +32,8 @@ public:
     DecisionTree();
     DecisionTree(int max_depth, int min_examples, bool subset_features);
 
-    void train(Data training);
-    std::vector<int> predict(Data testing);
+    void train(Data& training);
+    std::vector<int> predict(Data& testing);
 };
 
 #endif /* __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_ */

@@ -1,6 +1,8 @@
 #ifndef __PARALLEL_ENSEMBLE_TREES_RANDOM_FOREST_H_
 #define __PARALLEL_ENSEMBLE_TREES_RANDOM_FOREST_H_
 
+#include <chrono>
+#include <random>
 #include <vector>
 #include <utility>
 
@@ -17,13 +19,15 @@ private:
     bool subset_features;
     std::vector<DecisionTree> trees;
 
+    Data sample_with_replacement(Data training);
+
 public:
     RandomForest();
     RandomForest(int num_trees, int max_depth, int min_examples,
                  bool subset_features);
 
-    void train(Data training);
-    std::vector<int> predict(Data testing);
+    void train(Data& training);
+    std::vector<int> predict(Data& testing);
 };
 
 #endif /* __PARALLEL_ENSEMBLE_TREES_RANDOM_FOREST_H_ */
