@@ -19,7 +19,7 @@ private:
     bool subset_features;
     std::vector<DecisionTree> trees;
 
-    Data sample_with_replacement(Data training);
+    Data sample_with_replacement(Data& training);
 
 public:
     RandomForest();

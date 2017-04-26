@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 
     //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
 
-    RandomForest rf(50, 10, 10, false);
+    RandomForest rf(32, 10, 10, false);
     rf.train(training);
     std::vector<int> res = rf.predict(testing);
 

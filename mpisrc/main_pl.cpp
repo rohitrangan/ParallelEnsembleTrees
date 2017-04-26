@@ -35,7 +35,7 @@ Data sample_with_replacement(Data training)
     return Data(new_features, new_labels, new_weights);
 }
 
-std::vector<DecisionTree> train_rf(Data& training, int num_trees, int max_depth,
+std::vector<DecisionTree> train_rf(Data training, int num_trees, int max_depth,
                                    int min_examples, bool subset_features)
 {
     std::vector<DecisionTree> trees;
@@ -50,29 +50,20 @@ std::vector<DecisionTree> train_rf(Data& training, int num_trees, int max_depth,
     return trees;
 }
 
-std::vector<int> predict_rf(Data& testing, std::vector<DecisionTree> trees)
+std::vector<int> predict_rf(Data testing, std::vector<DecisionTree> trees)
 {
     int dataset_size = testing.get_dataset_size();
     int num_trees = trees.size();
     std::vector<int> results(dataset_size, 0);
-    std::vector<int> class_0_count(dataset_size, 0);
-    std::vector<int> class_1_count(dataset_size, 0);
+    std::vector<int> tree_results;
 
     for(int i = 0; i < num_trees; ++i)
     {
-        std::vector<int> tree_results = trees[i].predict(testing);
-        for(auto it = tree_results.begin(); it != tree_results.end(); ++it)
+        tree_results = trees[i].predict(testing);
+        for(int j = 0; j < tree_results.size(); ++j)
         {
-            if(*it == 0)
-                ++class_0_count[i];
-            else
-                ++class_1_count[i];
+            results[j] += tree_results[j];
         }
-    }
-
-    for(int i = 0; i < dataset_size; ++i)
-    {
-        results[i] = (class_0_count[i] >= class_1_count[i]) ? 0 : 1;
     }
 
     return results;

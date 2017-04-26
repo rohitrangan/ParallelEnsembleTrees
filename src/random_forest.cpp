@@ -1,6 +1,6 @@
 #include "../include/random_forest.h"
 
-Data RandomForest::sample_with_replacement(Data training)
+Data RandomForest::sample_with_replacement(Data& training)
 {
     std::vector< std::vector<int> > features(training.get_features());
     std::vector<int> labels(training.get_labels());
@@ -55,25 +55,21 @@ void RandomForest::train(Data& training)
 std::vector<int> RandomForest::predict(Data& testing)
 {
     int dataset_size = testing.get_dataset_size();
+    int num_trees = trees.size();
     std::vector<int> results(dataset_size, 0);
-    std::vector<int> class_0_count(dataset_size, 0);
-    std::vector<int> class_1_count(dataset_size, 0);
+    std::vector<int> tree_results;
 
     for(int i = 0; i < num_trees; ++i)
     {
-        std::vector<int> tree_results = this->trees[i].predict(testing);
-        for(auto it = tree_results.begin(); it != tree_results.end(); ++it)
+        tree_results = trees[i].predict(testing);
+        for(int j = 0; j < tree_results.size(); ++j)
         {
-            if(*it == 0)
-                ++class_0_count[i];
-            else
-                ++class_1_count[i];
+            results[j] += tree_results[j];
         }
     }
-
-    for(int i = 0; i < dataset_size; ++i)
+    for(int i = 0; i < results.size(); ++i)
     {
-        results[i] = (class_0_count[i] >= class_1_count[i]) ? 0 : 1;
+        results[i] = (int)round((double)results[i] / (double)num_trees);
     }
 
     return results;

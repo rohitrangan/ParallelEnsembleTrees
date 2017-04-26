@@ -4,8 +4,9 @@ int DecisionTree::get_best_feature(Node *node, Data& training)
 {
     std::vector< std::vector<int> > features(training.get_features());
     std::vector<int> labels(training.get_labels());
+    std::vector<double> weights(training.get_weights());
 
-    float g_min = FLT_MAX;
+    double g_min = DBL_MAX;
     int fmin_id = INT_MIN;
 
     std::set<int> features_to_use;
@@ -35,15 +36,15 @@ int DecisionTree::get_best_feature(Node *node, Data& training)
     }
 
     for(int i: features_to_use){
-        int c_freq[2][2] = {{0}};
+        double c_freq[2][2] = {{0.0}};
 
         for(int j: node->node_data_indices){
             //c_freq's first/second row means feature absence/presence in the current vector (features[j])
             //c_freq's first/second column means feature belongs to 0th class/1st class
-            c_freq[features[j][i]][labels[j]] += 1;
+            c_freq[features[j][i]][labels[j]] += weights[j];
         }
-        float n_left = c_freq[0][0] + c_freq[0][1];
-        float n_right = c_freq[1][0] + c_freq[1][1];
+        double n_left = c_freq[0][0] + c_freq[0][1];
+        double n_right = c_freq[1][0] + c_freq[1][1];
 
         if(n_left != 0){
             c_freq[0][0] /= n_left;
@@ -54,10 +55,10 @@ int DecisionTree::get_best_feature(Node *node, Data& training)
             c_freq[1][0] /= n_right;
             c_freq[1][1] /= n_right;
         }
-        float g_left = (n_left/(n_left + n_right))*(1.0 - (pow(c_freq[0][0],2) + pow(c_freq[0][1],2)) );
-        float g_right = (n_right/(n_left + n_right))*(1.0 - (pow(c_freq[1][0],2) + pow(c_freq[1][1],2)) );
+        double g_left = (n_left/(n_left + n_right))*(1.0 - (pow(c_freq[0][0],2) + pow(c_freq[0][1],2)) );
+        double g_right = (n_right/(n_left + n_right))*(1.0 - (pow(c_freq[1][0],2) + pow(c_freq[1][1],2)) );
 
-        float g_total = g_left + g_right;
+        double g_total = g_left + g_right;
         if (g_total <= g_min){
             g_min = g_total;
             fmin_id = i;

@@ -46,7 +46,7 @@ Data::Data(char* feature_file, char* label_file)
 
     this->dataset_size = labels.size();
     this->weights =
-        std::vector<double>(this->dataset_size, (1.0 / this->dataset_size));
+        std::vector<double>(this->dataset_size, 1.0);
 }
 
 Data::Data(std::vector< std::vector<int> > features, std::vector<int> labels)
@@ -55,7 +55,7 @@ Data::Data(std::vector< std::vector<int> > features, std::vector<int> labels)
     this->labels = labels;
     this->dataset_size = labels.size();
     this->weights =
-        std::vector<double>(this->dataset_size, (1.0 / this->dataset_size));
+        std::vector<double>(this->dataset_size, 1.0);
 }
 
 Data::Data(std::vector< std::vector<int> > features, std::vector<int> labels,
