@@ -1,11 +1,10 @@
 #include "../include/decision_tree.h"
 
-int DecisionTree::get_best_feature(Node *node, Data& training)
+int DecisionTree::get_best_feature(Node *node,
+                                   std::vector< std::vector<int> >& features,
+                                   std::vector<int>& labels,
+                                   std::vector<double>& weights)
 {
-    std::vector< std::vector<int> > features(training.get_features());
-    std::vector<int> labels(training.get_labels());
-    std::vector<double> weights(training.get_weights());
-
     double g_min = DBL_MAX;
     int fmin_id = INT_MIN;
 
@@ -72,9 +71,8 @@ int DecisionTree::get_best_feature(Node *node, Data& training)
     return fmin_id;
 }
 
-int DecisionTree::get_majority_label(Node* node, Data& training)
+int DecisionTree::get_majority_label(Node* node, std::vector<int>& labels)
 {
-    std::vector<int> labels = training.get_labels();
     int p_count = 0; int n_count = 0;
     for(int i : node->node_data_indices)
     {
@@ -90,9 +88,8 @@ int DecisionTree::get_majority_label(Node* node, Data& training)
         return 1;
 }
 
-int DecisionTree::is_pure(Node* node, Data& training)
+int DecisionTree::is_pure(Node* node, std::vector<int>& labels)
 {
-    std::vector<int> labels = training.get_labels();
     int p_count = 0; int n_count = 0;
     for(int i : node->node_data_indices)
     {
@@ -110,27 +107,28 @@ int DecisionTree::is_pure(Node* node, Data& training)
         return -1;
 }
 
-Node* DecisionTree::create_tree(Data& training, int depth,
+Node* DecisionTree::create_tree(std::vector< std::vector<int> >& features,
+                                std::vector<int>& labels,
+                                std::vector<double>& weights, int depth,
                                 std::set<int> data_ind,
                                 std::set<int> feature_ind)
 {
     if((depth >= this->max_depth) || ((int)data_ind.size() <= this->min_examples))
     {
         Node* n = new Node(depth, data_ind, feature_ind, -1);
-        n->node_label = get_majority_label(n, training);
+        n->node_label = get_majority_label(n, labels);
         return n;
     }
 
     Node* n = new Node(depth, data_ind, feature_ind, -1);
-    int pure_val = is_pure(n, training);
+    int pure_val = is_pure(n, labels);
     if(pure_val != -1)
     {
         n->node_label = pure_val;
         return n;
     }
 
-    int best_feature = get_best_feature(n, training);
-    std::vector< std::vector<int> > features(training.get_features());
+    int best_feature = get_best_feature(n, features, labels, weights);
 
     n->best_feature = best_feature;
     std::set<int> left_data;
@@ -149,8 +147,10 @@ Node* DecisionTree::create_tree(Data& training, int depth,
 
     feature_ind.erase(best_feature);
 
-    n->left = create_tree(training, depth + 1, left_data, feature_ind);
-    n->right = create_tree(training, depth + 1, right_data, feature_ind);
+    n->left = create_tree(features, labels, weights, depth + 1, left_data,
+                          feature_ind);
+    n->right = create_tree(features, labels, weights, depth + 1, right_data,
+                           feature_ind);
 
     return n;
 }
@@ -188,6 +188,8 @@ DecisionTree::DecisionTree(int max_depth, int min_examples,
 void DecisionTree::train(Data& training)
 {
     std::vector< std::vector<int> > features = training.get_features();
+    std::vector<int> labels = training.get_labels();
+    std::vector<double> weights = training.get_weights();
     int n_features = features[0].size();
     int n_data = training.get_dataset_size();
 
@@ -202,7 +204,8 @@ void DecisionTree::train(Data& training)
         data_ind.insert(i);
     }
 
-    this->root = create_tree(training, 0, data_ind, feature_ind);
+    this->root =
+        create_tree(features, labels, weights, 0, data_ind, feature_ind);
 }
 
 std::vector<int> DecisionTree::predict(Data& testing)

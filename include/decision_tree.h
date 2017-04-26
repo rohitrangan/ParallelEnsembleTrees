@@ -21,10 +21,14 @@ private:
     bool subset_features;
     Node *root;
 
-    int get_best_feature(Node *node, Data& training);
-    int get_majority_label(Node* node, Data& training);
-    int is_pure(Node* node, Data& training);
-    Node* create_tree(Data& training, int depth, std::set<int> data_ind,
+    int get_best_feature(Node *node, std::vector< std::vector<int> >& features,
+                         std::vector<int>& labels,
+                         std::vector<double>& weights);
+    int get_majority_label(Node* node, std::vector<int>& labels);
+    int is_pure(Node* node, std::vector<int>& labels);
+    Node* create_tree(std::vector< std::vector<int> >& features,
+                      std::vector<int>& labels, std::vector<double>& weights,
+                      int depth, std::set<int> data_ind,
                       std::set<int> feature_ind);
     int predict_one(Node* node, std::vector<int> feature);
 
