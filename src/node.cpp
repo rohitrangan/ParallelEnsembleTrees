@@ -7,8 +7,8 @@ Node::Node(int node_depth, std::set<int> node_data_indices,
     this->node_data_indices = node_data_indices;
     this->current_feature_indices = current_feature_indices;
     this->best_feature = best_feature;
-    this->left = NULL;
-    this->right = NULL;
+    this->left = nullptr;
+    this->right = nullptr;
     this->node_label = -1;
 }
 

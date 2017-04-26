@@ -7,7 +7,7 @@ CXXOBJS=$(CXXSRCS:.cpp=.o)
 LIBS=
 INCLUDES=-I./include
 TARGET=ensemble_trees
-#DEBUGFLAGS=-g -ggdb -O0 -fno-inline
+DEBUGFLAGS=-g -ggdb -O0 -fno-inline
 
 MPICXX=mpic++
 MPICXXFLAGS= -Wall -Wextra -std=c++0x
@@ -16,7 +16,7 @@ MPICXXOBJS=$(MPICXXSRCS:.cpp=.o)
 MPILIBS=
 MPIINCLUDES=-I./include
 MPITARGET=ensemble_trees_pl
-#MPIDEBUGFLAGS=-g -ggdb -O0 -fno-inline
+MPIDEBUGFLAGS=-g -ggdb -O0 -fno-inline
 
 # Required for the target clean.
 RM=rm -rf

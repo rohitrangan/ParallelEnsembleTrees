@@ -106,7 +106,6 @@ int main(int argc, char* argv[])
                 ++n_corr;
         }
         std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
-        delete recv_res;
     }
 
     MPI_Finalize();
