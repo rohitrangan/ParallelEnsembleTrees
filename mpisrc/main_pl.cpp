@@ -193,7 +193,6 @@ int main(int argc, char* argv[])
         Data all_training(argv[1], argv[2]);
         Data testing(argv[3], argv[4]);
         int all_dataset_size = all_training.get_dataset_size();
-        all_training.shuffle_dataset();
         std::vector< std::vector<int> > all_features =
             all_training.get_features();
         std::vector<int> all_labels = all_training.get_labels();
@@ -251,13 +250,12 @@ int main(int argc, char* argv[])
 
         int n_corr = 0;
         int testing_size = testing.get_dataset_size();
-        std::vector< std::vector<int> > test_features;
+        std::vector< std::vector<int> > test_features = testing.get_features();
         std::vector<int> test_labels;
         int* reduce_pred = nullptr;
         if(rank == 0)
         {
             reduce_pred = new int(num_trees);
-            test_features = testing.get_features();
             test_labels = testing.get_labels();
         }
         for(int i = 0; i < testing_size; ++i)
