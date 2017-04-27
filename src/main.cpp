@@ -1,42 +1,73 @@
+#include <string>
 #include <iostream>
 
 #include "../include/data.h"
 #include "../include/node.h"
+#include "../include/adaboost.h"
 #include "../include/decision_tree.h"
 #include "../include/random_forest.h"
 
 int main(int argc, char* argv[])
 {
-    Data training(argv[1], argv[2]);
-    Data testing(argv[3], argv[4]);
-
-    /*DecisionTree dtree(10, 10, false);
-    dtree.train(training);
-    std::vector<int> res = dtree.predict(testing);
-
-    int n_corr = 0;
-    std::vector<int> cmpr = testing.get_labels();
-    for(int i = 0; i < res.size(); ++i)
+    if(argc != 7)
     {
-        if(cmpr[i] == res[i])
-            ++n_corr;
-    }*/
-
-    //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
-
-    RandomForest rf(32, 10, 10, false);
-    rf.train(training);
-    std::vector<int> res = rf.predict(testing);
-
-    int n_corr = 0;
-    std::vector<int> cmpr = testing.get_labels();
-    for(int i = 0; i < res.size(); ++i)
-    {
-        if(cmpr[i] == res[i])
-            ++n_corr;
+        std::cout << "Need 6 arguments.\n";
+        return 1;
     }
 
-    std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+    Data training(argv[1], argv[2]);
+    Data testing(argv[3], argv[4]);
+    int alg = std::stoi(argv[5]);
+    int num_trees = std::stoi(argv[6]);
+
+    if(alg == 1)
+    {
+        DecisionTree dtree(10, 10, false);
+        dtree.train(training);
+        std::vector<int> res = dtree.predict(testing);
+
+        int n_corr = 0;
+        std::vector<int> cmpr = testing.get_labels();
+        for(int i = 0; i < (int)res.size(); ++i)
+        {
+            if(cmpr[i] == res[i])
+                ++n_corr;
+        }
+
+        std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+    }
+    else if(alg == 2)
+    {
+        RandomForest rf(num_trees, 10, 10, false);
+        rf.train(training);
+        std::vector<int> res = rf.predict(testing);
+
+        int n_corr = 0;
+        std::vector<int> cmpr = testing.get_labels();
+        for(int i = 0; i < (int)res.size(); ++i)
+        {
+            if(cmpr[i] == res[i])
+                ++n_corr;
+        }
+
+        std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+    }
+    else if(alg == 3)
+    {
+        AdaBoost ab(num_trees, 10, 10);
+        ab.train(training);
+        std::vector<int> res = ab.predict(testing);
+
+        int n_corr = 0;
+        std::vector<int> cmpr = testing.get_labels();
+        for(int i = 0; i < (int)res.size(); ++i)
+        {
+            if(cmpr[i] == res[i])
+                ++n_corr;
+        }
+
+        std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+    }
 
     return 0;
 }

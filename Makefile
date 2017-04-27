@@ -2,7 +2,7 @@
 
 CXX=c++
 CXXFLAGS= -Wall -Wextra -std=c++0x
-CXXSRCS=src/main.cpp src/data.cpp src/node.cpp src/decision_tree.cpp src/random_forest.cpp
+CXXSRCS=src/main.cpp src/data.cpp src/node.cpp src/decision_tree.cpp src/random_forest.cpp src/adaboost.cpp
 CXXOBJS=$(CXXSRCS:.cpp=.o)
 LIBS=
 INCLUDES=-I./include

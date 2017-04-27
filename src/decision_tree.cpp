@@ -208,6 +208,28 @@ void DecisionTree::train(Data& training)
         create_tree(features, labels, weights, 0, data_ind, feature_ind);
 }
 
+void DecisionTree::train(Data& training, std::vector<double>& weights)
+{
+    std::vector< std::vector<int> > features = training.get_features();
+    std::vector<int> labels = training.get_labels();
+    int n_features = features[0].size();
+    int n_data = training.get_dataset_size();
+
+    std::set<int> data_ind;
+    std::set<int> feature_ind;
+    for(int i = 0; i < n_features; ++i)
+    {
+        feature_ind.insert(i);
+    }
+    for(int i = 0; i < n_data; ++i)
+    {
+        data_ind.insert(i);
+    }
+
+    this->root =
+        create_tree(features, labels, weights, 0, data_ind, feature_ind);
+}
+
 std::vector<int> DecisionTree::predict(Data& testing)
 {
     std::vector< std::vector<int> > features = testing.get_features();

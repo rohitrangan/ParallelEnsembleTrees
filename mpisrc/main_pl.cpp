@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include "../include/data.h"
 #include "../include/node.h"
@@ -24,7 +25,7 @@ Data sample_with_replacement(Data training)
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> dist(0, training.get_dataset_size() - 1);
 
-    for(int i = 0; i < training.get_dataset_size(); ++i)
+    for(int i = 0; i < (int)training.get_dataset_size(); ++i)
     {
         int data_select = dist(generator);
         new_features.push_back(features[data_select]);
@@ -60,7 +61,7 @@ std::vector<int> predict_rf(Data testing, std::vector<DecisionTree> trees)
     for(int i = 0; i < num_trees; ++i)
     {
         tree_results = trees[i].predict(testing);
-        for(int j = 0; j < tree_results.size(); ++j)
+        for(int j = 0; j < (int)tree_results.size(); ++j)
         {
             results[j] += tree_results[j];
         }
@@ -71,41 +72,100 @@ std::vector<int> predict_rf(Data testing, std::vector<DecisionTree> trees)
 
 int main(int argc, char* argv[])
 {
+    if(argc != 7)
+    {
+        std::cout << "Need 6 arguments.\n";
+        return 1;
+    }
+
     int rank, nproc;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
-    int all_trees = std::stoi(argv[5]);
-    int num_trees_proc = all_trees / nproc;
-    int max_depth = 10;
-    int min_examples = 10;
-    bool subset_features = true;
+    int alg = std::stoi(argv[5]);
+    int all_trees = std::stoi(argv[6]);
 
-    Data training(argv[1], argv[2]);
-    Data testing(argv[3], argv[4]);
-    std::vector<DecisionTree> trees =
-        train_rf(training, num_trees_proc, max_depth, min_examples, subset_features);
-    std::vector<int> res = predict_rf(testing, trees);
-    int* recv_res = nullptr;
-    if(rank == 0)
+    if(alg == 2)
     {
-        recv_res = new int(res.size());
-    }
+        int num_trees_proc = all_trees / nproc;
+        int max_depth = 10;
+        int min_examples = 10;
+        bool subset_features = true;
 
-    MPI_Reduce(&res[0], recv_res, (int)res.size(), MPI_INT, MPI_SUM, 0,
-               MPI_COMM_WORLD);
-    if(rank == 0)
-    {
-        int n_corr = 0;
-        std::vector<int> cmpr = testing.get_labels();
-        for(int i = 0; i < res.size(); ++i)
+        Data training(argv[1], argv[2]);
+        Data testing(argv[3], argv[4]);
+        std::vector<DecisionTree> trees =
+            train_rf(training, num_trees_proc, max_depth, min_examples,
+                     subset_features);
+        std::vector<int> res = predict_rf(testing, trees);
+        int* recv_res = nullptr;
+        if(rank == 0)
         {
-            int pred = (int)round((double)recv_res[i] / (double)all_trees);
-            if(cmpr[i] == pred)
-                ++n_corr;
+            recv_res = new int(res.size());
         }
-        std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+
+        MPI_Reduce(&res[0], recv_res, (int)res.size(), MPI_INT, MPI_SUM, 0,
+                   MPI_COMM_WORLD);
+        if(rank == 0)
+        {
+            int n_corr = 0;
+            std::vector<int> cmpr = testing.get_labels();
+            for(int i = 0; i < (int)res.size(); ++i)
+            {
+                int pred = (int)round((double)recv_res[i] / (double)all_trees);
+                if(cmpr[i] == pred)
+                    ++n_corr;
+            }
+            std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+        }
+    }
+    else if(alg == 3)
+    {
+        int num_trees = all_trees;
+        int max_depth = 10;
+        int min_examples = 10;
+        int min_dset_size = 200;
+        int dset_size_proc = 0;
+        bool subset_features = false;
+        Data all_training(argv[1], argv[2]);
+        int all_dataset_size = all_training.get_dataset_size();
+        all_training.shuffle_dataset();
+        std::vector< std::vector<int> > all_features =
+            all_training.get_features();
+        std::vector<int> all_labels = all_training.get_labels();
+        std::vector< std::vector<int> > features;
+        std::vector<int> labels;
+
+        if((all_dataset_size / nproc) < min_dset_size)
+        {
+            // Get min_dset_size random examples.
+            unsigned seed =
+                std::chrono::system_clock::now().time_since_epoch().count();
+            std::default_random_engine generator(seed);
+            std::uniform_int_distribution<int> dist(0, all_dataset_size - 1);
+
+            for(int i = 0; i < min_dset_size; ++i)
+            {
+                int data_select = dist(generator);
+                features.push_back(all_features[data_select]);
+                labels.push_back(all_labels[data_select]);
+            }
+        }
+        else
+        {
+            // Get all_dataset_size / nproc examples.
+            int offset = rank * (all_dataset_size / nproc);
+            for(int i = offset; i < offset + (all_dataset_size / nproc); ++i)
+            {
+                features.push_back(all_features[i]);
+                labels.push_back(all_labels[i]);
+            }
+        }
+
+        Data training(features, labels);
+        AdaBoost ab(num_trees, 10, 10);
+        ab.train(training);
     }
 
     MPI_Finalize();

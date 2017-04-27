@@ -87,3 +87,24 @@ std::vector<double> Data::get_weights()
     return this->weights;
 }
 
+void Data::shuffle_dataset()
+{
+    std::vector< std::vector<int> > new_features;
+    std::vector<int> new_labels;
+    std::vector<double> new_weights;
+    std::vector<int> new_idxs(0, dataset_size);
+    std::iota(new_idxs.begin(), new_idxs.end(), 0);
+    std::random_shuffle(new_idxs.begin(), new_idxs.end());
+
+    for(int i = 0; i < dataset_size; ++i)
+    {
+        new_features.push_back(features[new_idxs[i]]);
+        new_labels.push_back(labels[new_idxs[i]]);
+        new_weights.push_back(weights[new_idxs[i]]);
+    }
+
+    features = new_features;
+    labels = new_labels;
+    weights = new_weights;
+}
+

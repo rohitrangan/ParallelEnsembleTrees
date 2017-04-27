@@ -15,7 +15,7 @@ Data RandomForest::sample_with_replacement(Data& training)
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> dist(0, training.get_dataset_size() - 1);
 
-    for(int i = 0; i < training.get_dataset_size(); ++i)
+    for(int i = 0; i < (int)training.get_dataset_size(); ++i)
     {
         int data_select = dist(generator);
         new_features.push_back(features[data_select]);
@@ -62,12 +62,12 @@ std::vector<int> RandomForest::predict(Data& testing)
     for(int i = 0; i < num_trees; ++i)
     {
         tree_results = trees[i].predict(testing);
-        for(int j = 0; j < tree_results.size(); ++j)
+        for(int j = 0; j < (int)tree_results.size(); ++j)
         {
             results[j] += tree_results[j];
         }
     }
-    for(int i = 0; i < results.size(); ++i)
+    for(int i = 0; i < (int)results.size(); ++i)
     {
         results[i] = (int)round((double)results[i] / (double)num_trees);
     }

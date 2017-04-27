@@ -1,10 +1,12 @@
 #ifndef __PARALLEL_ENSEMBLE_TREES_DATA_H_
 #define __PARALLEL_ENSEMBLE_TREES_DATA_H_
 
-#include <vector>
 #include <string>
+#include <vector>
 #include <fstream>
+#include <numeric>
 #include <iostream>
+#include <algorithm>
 
 class Data
 {
@@ -25,6 +27,7 @@ public:
     std::vector< std::vector<int> > get_features();
     std::vector<int> get_labels();
     std::vector<double> get_weights();
+    void shuffle_dataset();
 };
 
 #endif /* __PARALLEL_ENSEMBLE_TREES_DATA_H_ */

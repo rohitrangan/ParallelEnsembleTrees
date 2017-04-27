@@ -37,6 +37,7 @@ public:
     DecisionTree(int max_depth, int min_examples, bool subset_features);
 
     void train(Data& training);
+    void train(Data& training, std::vector<double>& weights);
     std::vector<int> predict(Data& testing);
 };
 
