@@ -29,6 +29,9 @@ void AdaBoost::train(Data& training)
             if(results[i] != data_labels[i])
                 eps_err += data_weights[i];
         }
+        if(eps_err - 0.01 < 0){
+            eps_err = 0.01;
+        }
         alpha = 0.5 * log((1.0 - eps_err) / eps_err);
         alphas.push_back(alpha);
         for(int i = 0; i < dataset_size; ++i)

@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
 
     if(alg == 1)
     {
+        //Start clock here
         DecisionTree dtree(10, 10, false);
         dtree.train(training);
         std::vector<int> res = dtree.predict(testing);
@@ -34,7 +35,8 @@ int main(int argc, char* argv[])
                 ++n_corr;
         }
 
-        std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+        //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+        //End clock here
     }
     else if(alg == 2)
     {
@@ -50,7 +52,7 @@ int main(int argc, char* argv[])
                 ++n_corr;
         }
 
-        std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+        // std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
     }
     else if(alg == 3)
     {
@@ -65,8 +67,8 @@ int main(int argc, char* argv[])
             if(cmpr[i] == res[i])
                 ++n_corr;
         }
-
-        std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+        //Output number of trees and time taken
+        // std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
     }
 
     return 0;

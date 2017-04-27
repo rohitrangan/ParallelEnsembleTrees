@@ -105,7 +105,10 @@ std::vector<AB_tree> train_ab(Data training, int num_trees, int max_depth,
             if(results[i] != data_labels[i])
                 eps_err += data_weights[i];
         }
-        alpha = 0.5 * log((1.0 - eps_err) / eps_err);
+        if(eps_err - 0.01 < 0){
+            eps_err = 0.01;
+        }
+        alpha = 0.5 * log((1.0 - eps_err) / eps_err);        
         for(int i = 0; i < dataset_size; ++i)
         {
             data_weights[i] = data_weights[i] *
@@ -159,6 +162,7 @@ int main(int argc, char* argv[])
 
         Data training(argv[1], argv[2]);
         Data testing(argv[3], argv[4]);
+        //Start clock here
         std::vector<DecisionTree> trees =
             train_rf(training, num_trees_proc, max_depth, min_examples,
                      subset_features);
@@ -181,6 +185,7 @@ int main(int argc, char* argv[])
                 if(cmpr[i] == pred)
                     ++n_corr;
             }
+            //End time here
             std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
         }
     }
@@ -198,7 +203,7 @@ int main(int argc, char* argv[])
         std::vector<int> all_labels = all_training.get_labels();
         std::vector< std::vector<int> > features;
         std::vector<int> labels;
-
+        //Start clock here
         if((all_dataset_size / nproc) < min_dset_size)
         {
             // Get min_dset_size random examples.
@@ -282,6 +287,7 @@ int main(int argc, char* argv[])
         }
         if(rank == 0)
         {
+            //End time here
             std::cout << "Result = " << (double)n_corr / (double)testing_size << "\n";
         }
     }
