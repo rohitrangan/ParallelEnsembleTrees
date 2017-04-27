@@ -39,6 +39,7 @@ public:
     void train(Data& training);
     void train(Data& training, std::vector<double>& weights);
     std::vector<int> predict(Data& testing);
+    int predict_one(std::vector<int> feature);
 };
 
 #endif /* __PARALLEL_ENSEMBLE_TREES_DECISION_TREE_H_ */

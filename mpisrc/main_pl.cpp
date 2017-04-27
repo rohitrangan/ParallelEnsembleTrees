@@ -10,6 +10,9 @@
 #include "../include/node.h"
 #include "../include/decision_tree.h"
 
+#define map_pred(x) (((x) == 0) ? -1.0 : 1.0)
+#define map_pred_int(x) (((x) == 0) ? -1 : 1)
+
 Data sample_with_replacement(Data training)
 {
     std::vector< std::vector<int> > features(training.get_features());
@@ -70,6 +73,67 @@ std::vector<int> predict_rf(Data testing, std::vector<DecisionTree> trees)
     return results;
 }
 
+struct AB_tree
+{
+    DecisionTree tree;
+    double alpha;
+
+    AB_tree(DecisionTree t, double a) : tree(t), alpha(a) {}
+
+    friend bool operator<(const AB_tree& l, const AB_tree& r)
+    {
+        return (l.alpha < r.alpha);
+    }
+};
+
+std::vector<AB_tree> train_ab(Data training, int num_trees, int max_depth,
+                              int min_examples)
+{
+    int dataset_size = training.get_dataset_size();
+    std::vector<double> data_weights(dataset_size, (1.0 / dataset_size));
+    std::vector<int> data_labels(training.get_labels());
+    std::vector<AB_tree> trees;
+
+    for(int i = 0; i < num_trees; ++i)
+    {
+        double eps_err = 0.0, alpha = 0.0, wt_sum = 0.0;
+        DecisionTree dtree(max_depth, min_examples, false);
+        dtree.train(training, data_weights);
+        std::vector<int> results = dtree.predict(training);
+        for(int i = 0; i < dataset_size; ++i)
+        {
+            if(results[i] != data_labels[i])
+                eps_err += data_weights[i];
+        }
+        alpha = 0.5 * log((1.0 - eps_err) / eps_err);
+        for(int i = 0; i < dataset_size; ++i)
+        {
+            data_weights[i] = data_weights[i] *
+                exp(-(map_pred(results[i]) * map_pred(data_labels[i]) * alpha));
+            wt_sum += data_weights[i];
+        }
+        for(int i = 0; i < dataset_size; ++i)
+        {
+            data_weights[i] = data_weights[i] / wt_sum;
+        }
+        AB_tree ab_tree = {dtree, alpha};
+        trees.push_back(ab_tree);
+    }
+    std::sort(trees.begin(), trees.end());
+
+    return trees;
+}
+
+std::vector<int> predict_ab(std::vector<int> f, std::vector<AB_tree> trees)
+{
+    std::vector<int> preds(trees.size(), 0);
+    for(int i = 0; i < (int)trees.size(); ++i)
+    {
+        preds[i] = map_pred_int(trees[i].tree.predict_one(f));
+    }
+    return preds;
+}
+
 int main(int argc, char* argv[])
 {
     if(argc != 7)
@@ -126,9 +190,8 @@ int main(int argc, char* argv[])
         int max_depth = 10;
         int min_examples = 10;
         int min_dset_size = 200;
-        int dset_size_proc = 0;
-        bool subset_features = false;
         Data all_training(argv[1], argv[2]);
+        Data testing(argv[3], argv[4]);
         int all_dataset_size = all_training.get_dataset_size();
         all_training.shuffle_dataset();
         std::vector< std::vector<int> > all_features =
@@ -164,8 +227,65 @@ int main(int argc, char* argv[])
         }
 
         Data training(features, labels);
-        AdaBoost ab(num_trees, 10, 10);
-        ab.train(training);
+        std::vector<AB_tree> trees = train_ab(training, num_trees, max_depth,
+                                              min_examples);
+        std::vector<double> alphas(num_trees, 0.0);
+        for(int i = 0; i < num_trees; ++i)
+        {
+            alphas[i] = trees[i].alpha;
+        }
+        double* recv_alphas = nullptr;
+        if(rank == 0)
+        {
+            recv_alphas = new double(num_trees);
+        }
+        MPI_Reduce(&alphas[0], recv_alphas, num_trees, MPI_DOUBLE, MPI_SUM, 0,
+                   MPI_COMM_WORLD);
+        if(rank == 0)
+        {
+            for(int i = 0; i < num_trees; ++i)
+            {
+                recv_alphas[i] = recv_alphas[i] / (double)nproc;
+            }
+        }
+
+        int n_corr = 0;
+        int testing_size = testing.get_dataset_size();
+        std::vector< std::vector<int> > test_features;
+        std::vector<int> test_labels;
+        int* reduce_pred = nullptr;
+        if(rank == 0)
+        {
+            reduce_pred = new int(num_trees);
+            test_features = testing.get_features();
+            test_labels = testing.get_labels();
+        }
+        for(int i = 0; i < testing_size; ++i)
+        {
+            std::vector<int> res_one = predict_ab(test_features[i], trees);
+            MPI_Reduce(&res_one[0], reduce_pred, num_trees, MPI_INT, MPI_SUM, 0,
+                       MPI_COMM_WORLD);
+            if(rank == 0)
+            {
+                double final_pred = 0.0;
+                for(int j = 0; j < num_trees; ++j)
+                {
+                    if(reduce_pred[j] != 0)
+                    {
+                        final_pred += (recv_alphas[j] * reduce_pred[j]);
+                    }
+                }
+                int fin_pred = (final_pred >= 0.0) ? 1 : 0;
+                if(fin_pred == test_labels[i])
+                {
+                    ++n_corr;
+                }
+            }
+        }
+        if(rank == 0)
+        {
+            std::cout << "Result = " << (double)n_corr / (double)testing_size << "\n";
+        }
     }
 
     MPI_Finalize();

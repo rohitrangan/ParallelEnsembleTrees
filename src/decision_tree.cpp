@@ -244,3 +244,8 @@ std::vector<int> DecisionTree::predict(Data& testing)
     return result;
 }
 
+int DecisionTree::predict_one(std::vector<int> feature)
+{
+    return predict_one(this->root, feature);
+}
+
