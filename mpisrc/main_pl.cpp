@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
             //End time here
             timestamp_t t1 = get_timestamp();
 
-            std::cout<< "Number of trees "<< all_trees << "time " << (t1 - t0)<<std::endl;
+            std::cout<<(t1 - t0)<<std::endl;
             //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
         }
     }
@@ -313,7 +313,7 @@ int main(int argc, char* argv[])
         {
             //End time here
             timestamp_t t1 = get_timestamp();
-            std::cout<< "Number of trees "<< all_trees << "time " << (t1 - t0)<<std::endl;
+            std::cout<<(t1 - t0)<<std::endl;
             //std::cout << "Result = " << (double)n_corr / (double)testing_size << "\n";
         }
     }

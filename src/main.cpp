@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
         //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
         timestamp_t t1 = get_timestamp();
 
-        std::cout<< "Number of trees 10" << "time " << (t1 - t0)<<std::endl;
+        std::cout<<(t1 - t0)<<std::endl;
         //End clock here
     }
     else if(alg == 2)
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
         }
         timestamp_t t1 = get_timestamp();
 
-        std::cout<< "Number of trees "<< num_trees << "time " << (t1 - t0)<<std::endl;
+        std::cout<<(t1 - t0)<<std::endl;
         // std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
     }
     else if(alg == 3)
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
         }
         timestamp_t t1 = get_timestamp();
 
-        std::cout<< "Number of trees "<< num_trees << "time " << (t1 - t0)<<std::endl;
+        std::cout<<(t1 - t0)<<std::endl;
         //Output number of trees and time taken
         // std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
     }
