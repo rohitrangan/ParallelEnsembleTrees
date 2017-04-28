@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include <ctime>
+#include <sys/time.h>
 
 #include "../include/data.h"
 #include "../include/node.h"

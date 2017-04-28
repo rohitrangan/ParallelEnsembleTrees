@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <ctime>
+#include <sys/time.h>
 
 #include "../include/data.h"
 #include "../include/node.h"
