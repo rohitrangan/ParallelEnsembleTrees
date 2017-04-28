@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
             //End time here
             timestamp_t t1 = get_timestamp();
 
-            std::cout<<(t1 - t0)<<std::endl;
+            std::cout<<alg<<","<<nproc<<","<<all_trees<<","<<(t1 - t0)<<std::endl;
             //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
         }
     }
@@ -312,8 +312,8 @@ int main(int argc, char* argv[])
         if(rank == 0)
         {
             //End time here
-            timestamp_t t1 = get_timestamp();
-            std::cout<<(t1 - t0)<<std::endl;
+            timestamp_t t1 = get_timestamp();            
+            std::cout<<alg<<","<<nproc<<","<<all_trees<<","<<(t1 - t0)<<std::endl;
             //std::cout << "Result = " << (double)n_corr / (double)testing_size << "\n";
         }
     }
