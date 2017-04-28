@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <ctime>
 
 #include "../include/data.h"
 #include "../include/node.h"
@@ -12,6 +13,16 @@
 
 #define map_pred(x) (((x) == 0) ? -1.0 : 1.0)
 #define map_pred_int(x) (((x) == 0) ? -1 : 1)
+
+typedef unsigned long long timestamp_t;
+static timestamp_t get_timestamp ();
+static timestamp_t
+    get_timestamp ()
+    {
+      struct timeval now;
+      gettimeofday (&now, NULL);
+      return  now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
+    }
 
 Data sample_with_replacement(Data training)
 {
@@ -163,6 +174,11 @@ int main(int argc, char* argv[])
         Data training(argv[1], argv[2]);
         Data testing(argv[3], argv[4]);
         //Start clock here
+        timestamp_t t0;
+        if(rank == 0){
+            t0 = get_timestamp();
+        }
+
         std::vector<DecisionTree> trees =
             train_rf(training, num_trees_proc, max_depth, min_examples,
                      subset_features);
@@ -186,7 +202,10 @@ int main(int argc, char* argv[])
                     ++n_corr;
             }
             //End time here
-            std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+            timestamp_t t1 = get_timestamp();
+
+            cout<< "Number of trees "<< all_trees << "time " << (t1 - t0)<<endl;
+            //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
         }
     }
     else if(alg == 3)
@@ -204,6 +223,11 @@ int main(int argc, char* argv[])
         std::vector< std::vector<int> > features;
         std::vector<int> labels;
         //Start clock here
+        timestamp_t t0;
+        if(rank == 0){ 
+            t0 = get_timestamp();
+        }
+
         if((all_dataset_size / nproc) < min_dset_size)
         {
             // Get min_dset_size random examples.
@@ -288,7 +312,9 @@ int main(int argc, char* argv[])
         if(rank == 0)
         {
             //End time here
-            std::cout << "Result = " << (double)n_corr / (double)testing_size << "\n";
+            timestamp_t t1 = get_timestamp();
+            cout<< "Number of trees "<< all_trees << "time " << (t1 - t0)<<endl;
+            //std::cout << "Result = " << (double)n_corr / (double)testing_size << "\n";
         }
     }
 

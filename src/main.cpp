@@ -1,11 +1,22 @@
 #include <string>
 #include <iostream>
+#include <ctime>
 
 #include "../include/data.h"
 #include "../include/node.h"
 #include "../include/adaboost.h"
 #include "../include/decision_tree.h"
 #include "../include/random_forest.h"
+
+typedef unsigned long long timestamp_t;
+static timestamp_t get_timestamp ();
+static timestamp_t
+    get_timestamp ()
+    {
+      struct timeval now;
+      gettimeofday (&now, NULL);
+      return  now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
+    }
 
 int main(int argc, char* argv[])
 {
@@ -23,6 +34,8 @@ int main(int argc, char* argv[])
     if(alg == 1)
     {
         //Start clock here
+        timestamp_t t0 = get_timestamp();
+        
         DecisionTree dtree(10, 10, false);
         dtree.train(training);
         std::vector<int> res = dtree.predict(testing);
@@ -36,10 +49,14 @@ int main(int argc, char* argv[])
         }
 
         //std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
+        timestamp_t t1 = get_timestamp();
+
+        cout<< "Number of trees 10" << "time " << (t1 - t0)<<endl;
         //End clock here
     }
     else if(alg == 2)
     {
+        timestamp_t t0 = get_timestamp();
         RandomForest rf(num_trees, 10, 10, false);
         rf.train(training);
         std::vector<int> res = rf.predict(testing);
@@ -51,11 +68,14 @@ int main(int argc, char* argv[])
             if(cmpr[i] == res[i])
                 ++n_corr;
         }
+        timestamp_t t1 = get_timestamp();
 
+        cout<< "Number of trees "<< num_trees << "time " << (t1 - t0)<<endl;
         // std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
     }
     else if(alg == 3)
     {
+        timestamp_t t0 = get_timestamp();
         AdaBoost ab(num_trees, 10, 10);
         ab.train(training);
         std::vector<int> res = ab.predict(testing);
@@ -67,6 +87,9 @@ int main(int argc, char* argv[])
             if(cmpr[i] == res[i])
                 ++n_corr;
         }
+        timestamp_t t1 = get_timestamp();
+
+        cout<< "Number of trees "<< num_trees << "time " << (t1 - t0)<<endl;
         //Output number of trees and time taken
         // std::cout << "Result = " << (double)n_corr / (double)res.size() << "\n";
     }
